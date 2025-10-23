@@ -3,6 +3,8 @@
  */
 
 export default {
+  pleaseInput: '请输入',
+  pleaseSelect: '请选择',
   calendar: {
     placeholder: '请选择',
     title: '选择日期',

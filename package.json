@@ -139,6 +139,7 @@
     "jsdom": "^26.0.0",
     "json5": "^2.2.3",
     "lint-staged": "^13.2.0",
+    "lodash-es": "^4.17.21",
     "mini-types": "^0.1.7",
     "miniprogram-api-typings": "^3.12.3",
     "prettier": "^2.8.4",
