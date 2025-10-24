@@ -47,9 +47,10 @@
 import { forEach } from 'lodash-es'
 import { onMounted, defineComponent, ref, computed, watch } from 'vue'
 import { PREFIX } from '../_constants'
-import { useI18n } from 'vue-i18n'
+import { useTranslate } from '../composables-fn/useTranslate'
 import { enumFormItemType } from './form'
-const { t } = useI18n()
+const { translate } = useTranslate()
+
 const props = defineProps({
   // 表单配置项
   formItems: {
@@ -105,10 +106,11 @@ watch(
         let placeholderPrefix // placeholder前缀
         let trigger // 触发事件
         if (item.type === enumFormItemType.input || item.type === enumFormItemType.textarea) {
-          placeholderPrefix = t('pleaseInput')
+          placeholderPrefix = translate('pleaseInput')
           trigger = 'blur'
-        } else {
-          placeholderPrefix = t('pleaseSelect')
+        }
+        if (item.type === enumFormItemType.select) {
+          placeholderPrefix = translate('pleaseSelect')
           trigger = 'change'
         }
         if (!item.placeholder) {

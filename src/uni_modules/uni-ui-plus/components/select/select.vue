@@ -172,7 +172,11 @@ const handleConfirm = (event: any) => {
  * 选择确认事件
  * @param event
  */
-const handleChange = (event: any) => {}
+const handleChange = (event: any) => {
+  console.log(event)
+
+  emit('update:modelValue', event)
+}
 
 const handleOpen = () => {
   uni.$emit('eBusSelectComponent', true)
