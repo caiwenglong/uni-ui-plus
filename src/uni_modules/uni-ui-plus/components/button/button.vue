@@ -8,7 +8,6 @@ const attrs = useAttrs()
 
 // 合并 props 与 attrs，优先使用显式 props
 const mergedProps = computed(() => ({ ...attrs, ...props } as Record<string, any>))
-console.log('mergedProps:', mergedProps.value)
 </script>
 
 <script lang="ts">
@@ -28,7 +27,6 @@ export default defineComponent({
 
 <template>
   <WdButton v-bind="mergedProps">
-    插槽1
     <slot></slot>
   </WdButton>
 </template>

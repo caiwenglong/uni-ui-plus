@@ -3,11 +3,12 @@
     <wd-form ref="refForm" :model="formData">
       <wd-cell-group border>
         <wd-row>
-          <wd-col v-for="(formItem, i) in formItems" :key="formItem?.label + i" :span="formItem?.span">
+          <wd-col v-for="(formItem, i) in formItems" :key="(formItem?.label ?? '') + i" :span="formItem?.span">
             <template v-if="formItem?.type === enumFormItemType.line">
               <wd-gap bg-color="#f8f8f8" height="16rpx"></wd-gap>
             </template>
 
+            <!-- 输入框 -->
             <template v-if="!formItem?.type || formItem?.type === enumFormItemType.input">
               <UpInput
                 v-model="formData[formItem?.field]"
@@ -15,6 +16,18 @@
                 :disabled="formItem?.disabled || disabled"
                 v-bind="formItem"
               ></UpInput>
+            </template>
+
+            <!-- 选择框 -->
+            <template v-if="formItem?.type === enumFormItemType.select">
+              <UpSelect
+                v-model="formData[formItem?.field]"
+                :disabled="formItem?.disabled || disabled"
+                v-bind="formItem"
+                :formValue="formData"
+                :selectOptionsFn="formItem.selectOptionsFn"
+                :columns="formItem.columns"
+              ></UpSelect>
             </template>
           </wd-col>
         </wd-row>
@@ -31,17 +44,16 @@
 </template>
 
 <script lang="ts" setup>
-import { enumFormItemType } from './form'
-import UpInput from '../input/input.vue'
 import { forEach } from 'lodash-es'
 import { onMounted, defineComponent, ref, computed, watch } from 'vue'
 import { PREFIX } from '../_constants'
 import { useI18n } from 'vue-i18n'
+import { enumFormItemType } from './form'
 const { t } = useI18n()
 const props = defineProps({
   // 表单配置项
   formItems: {
-    type: Array,
+    type: Array as () => any[],
     default: () => []
   },
 
@@ -110,20 +122,17 @@ watch(
   }
 )
 
-onMounted(() => {
-  console.log(t)
-})
+onMounted(() => {})
 
 /**
  * 验证表单
- * @returns {Promise<unknown>}
  */
-const handleValidateForm = () => {
+const handleValidateForm = (): Promise<{ valid: boolean }> => {
   return new Promise((resolve, reject) => {
     refForm.value
       .validate()
       .then((valid: boolean) => {
-        resolve(valid)
+        resolve({ valid })
       })
       .catch((err: any) => {
         reject(err)
@@ -155,7 +164,7 @@ const handleSubmit = async () => {
 /**
  * 跳转到指定页面
  */
-function handleGoPage(url, flag) {
+function handleGoPage(url: string, flag?: string) {
   uni.navigateTo({
     url: url
   })

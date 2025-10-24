@@ -20,14 +20,12 @@ const emit = defineEmits(['update:modelValue', 'input', 'blur'])
 
 // 合并 props 与 attrs，优先使用显式 props
 const mergedProps = computed(() => ({ ...attrs, ...props } as Record<string, any>))
-console.log('mergedProps:', mergedProps.value)
 
 const inputValue = ref<string | number>('') // 输入框的值
 
 watch(
   () => props.modelValue,
   (newValue) => {
-    console.log(newValue)
     inputValue.value = isDef(newValue) ? String(newValue) : ''
   },
   { immediate: true }
@@ -60,7 +58,6 @@ export default defineComponent({
 
 <template>
   <view class="up-input">
-    88
     <WdInput v-bind="mergedProps" @input="handleInput" v-model="inputValue">
       <template #prefix v-if="!!prefix">
         {{ prefix }}
