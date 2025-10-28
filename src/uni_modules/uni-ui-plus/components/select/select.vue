@@ -1,26 +1,49 @@
+<template>
+  <view>
+    <wd-select-picker
+      :label="label"
+      :label-width="labelWidth"
+      :prop="field"
+      v-model="inputValue"
+      :columns="selectOptions"
+      :value-key="valueKey"
+      :label-key="labelKey"
+      :rules="rules"
+      :disabled="disabled"
+      :placeholder="disabled ? '' : placeholder"
+      :type="selectType"
+      :filterable="filterable"
+      :required="required"
+      :show-confirm="false"
+      :isVirtual="isVirtual"
+      @open="handleOpen"
+      @close="handleClose"
+      @confirm="handleConfirm"
+      @change="handleChange"
+      @filterSearch="handleChangeFilterSearch"
+    ></wd-select-picker>
+  </view>
+</template>
+
 <script lang="ts" setup>
-import { computed, defineComponent, useAttrs, ref, watch, onMounted } from 'vue'
-import { PREFIX } from '../_constants'
-import WdSelectPicker from 'wot-design-uni/components/wd-select-picker/wd-select-picker.vue'
-import { selectPickerProps } from 'wot-design-uni/components/wd-select-picker/types'
-import { isDef } from 'wot-design-uni/components/common/util'
-import { isFunction } from 'lodash-es'
+import { ref, computed, toRefs, onMounted } from 'vue'
+import wdSelectPicker from './wd-select-picker/wd-select-picker.vue'
+import { isFunction, isArray } from 'lodash-es'
 
 const props = defineProps({
-  ...selectPickerProps,
-  //   传入的数据源
+  /** 双向绑定的值 */
+  modelValue: {
+    type: [String, Number, Array],
+    default: ''
+  },
+
+  /** 双向绑定的值 */
   optionList: {
     type: Array,
     default: () => []
   },
 
-  // 是否是通过调用方法获取options
-  isApiOptions: {
-    type: Boolean,
-    default: true
-  },
-
-  // 获取下拉列表数据的方法
+  // 获取下拉列表
   selectOptionsFn: {
     type: Function,
     default: undefined
@@ -29,136 +52,165 @@ const props = defineProps({
   // 表单数据
   formValue: {
     type: Object,
-    default: () => ({})
+    default: () => {}
   },
 
-  // 字段文字字段名称
-  textFieldName: {
+  /** 字段文本名 */
+  textFiledName: {
     type: String,
     default: ''
   },
 
-  // 字段值字段名称
+  /** 字段名 */
   field: {
     type: String,
     default: ''
   },
 
-  // 标题名称
+  /** 文本名称 */
   label: {
     type: String,
     default: ''
   },
 
-  // 标题宽度
+  /** 是否禁用 */
+  disabled: {
+    type: Boolean,
+    default: false
+  },
+
+  /** 值对应的字段 */
+  valueKey: {
+    type: String,
+    default: 'value'
+  },
+
+  /** 文本对应的字段 */
+  labelKey: {
+    type: String,
+    default: 'label'
+  },
+
+  /** 文本宽度 */
   labelWidth: {
     type: String,
     default: ''
   },
 
-  // event bus名称
+  /** event bus名称 */
   busName: {
     type: String,
     default: 'busSelect'
+  },
+
+  /** 下拉框标识 */
+  flag: {
+    type: String,
+    default: ''
+  },
+
+  /** 验证规则 */
+  pattern: {},
+
+  /** 提示语 */
+  placeholder: {
+    type: String,
+    default: ''
+  },
+
+  /**
+   * type 默认值为 checkbox， 为默认值时，value 值类型为 Array 类型
+   * 设置 type 值为 radio ，开启单选类型，value 值类型为 String Number 或 Boolean。
+   */
+  selectType: {
+    type: String,
+    default: 'radio'
+  },
+
+  filterable: {
+    type: Boolean,
+    default: true
+  },
+
+  required: {
+    type: Boolean,
+    default: false
+  },
+
+  isVirtual: {
+    type: Boolean,
+    default: false
+  },
+
+  // 是否是通过调用方法获取options
+  isApiOptions: {
+    type: Boolean,
+    default: true
+  },
+
+  // 额外参数
+  extra: {
+    type: Object,
+    default: () => {}
   }
 })
-const attrs = useAttrs()
+const { selectOptionsFn } = props
+const { labelKey, valueKey, textFiledName, formValue, filterable, isVirtual, isApiOptions, optionList, selectType, extra } = toRefs(props)
 const emit = defineEmits(['update:modelValue'])
 
-// 合并 props 与 attrs，优先使用显式 props
-const mergedProps = computed(() => ({ ...attrs, ...props } as Record<string, any>))
-// eslint-disable-next-line vue/no-setup-props-destructure
-// const { selectOptionsFn } = props
-
-const selectValue = ref<string | number>('') // 输入框的值
-const selectOptions = ref<any[]>([]) // 最终传给 picker 的 columns（扁平数组或按需封装）
+// 获取数据源
 const optionsByApi = ref<any[]>([])
-
-// 取有效的 labelKey / valueKey（兼容多种命名）
-const effectiveLabelKey = computed(() => {
-  const m = mergedProps.value || {}
-  return m.labelKey || (props as any).labelKey || 'label'
-})
-const effectiveValueKey = computed(() => {
-  const m = mergedProps.value || {}
-  return m.valueField || (props as any).valueKey || 'value'
-})
-
-// 加载选项的函数，优先使用 selectOptionsFn（来自 props 或 attrs），否则使用 optionList / columns
-async function loadOptions() {
-  const fn = (props as any).selectOptionsFn || (attrs as any).selectOptionsFn
-  const optList = (props as any).optionList || (attrs as any).optionList
-  const incomingColumns = (props as any).columns || (attrs as any).columns
-
-  if (isFunction(fn)) {
-    try {
-      const res = await fn()
-      if (Array.isArray(res) || Array.isArray(res.data)) {
-        const data = Array.isArray(res) ? res : res.data
-        optionsByApi.value = data.map((item: any) => {
-          return {
-            ...item,
-            label: item[effectiveLabelKey.value] ?? item.label,
-            value: item[effectiveValueKey.value] ?? item.value
-          }
-        })
-        // 如果目标组件需要嵌套列（columns 是数组的数组），可在这里做 wrap： [optionsByApi.value]
-        selectOptions.value = optionsByApi.value
-      } else {
-        selectOptions.value = []
-      }
-    } catch (e) {
-      console.warn('selectOptionsFn 执行错误：', e)
-      selectOptions.value = []
-    }
-  } else if (Array.isArray(optList) && optList.length) {
-    selectOptions.value = optList.map((item: any) => ({
-      ...item,
-      label: item[effectiveLabelKey.value] ?? item.label,
-      value: item[effectiveValueKey.value] ?? item.value
-    }))
-  } else if (Array.isArray(incomingColumns) && incomingColumns.length) {
-    selectOptions.value = incomingColumns
-  } else {
-    selectOptions.value = []
+const showOptions = ref<any[]>([])
+onMounted(async () => {
+  if (isFunction(selectOptionsFn)) {
+    const data = await selectOptionsFn()
+    optionsByApi.value = isArray(data) ? data : data.data || []
+    isVirtual.value && (showOptions.value = optionsByApi.value?.slice(0, 20)) // 初始只取20条
   }
-}
+  if (isVirtual.value && !isApiOptions.value) {
+    showOptions.value = optionList.value?.slice(0, 20) // 初始只取20条
+  }
 
-// onMounted(async () => {
-//   await loadOptions()
-// })
+  if (isVirtual.value && props.modelValue) {
+    showOptions.value = handleGetOptionsByValue(props.modelValue)
+  }
+})
 
-watch(
-  () => [
-    (props as any).optionList,
-    (props as any).selectOptionsFn,
-    (props as any).columns,
-    (attrs as any).optionList,
-    (attrs as any).selectOptionsFn,
-    (attrs as any).columns
-  ],
-  async () => {
-    await loadOptions()
+/** 得到装箱绑定的值 */
+let inputValue = computed({
+  get() {
+    return props.modelValue
   },
-  { immediate: true }
-)
+  set(newValue) {
+    !!textFiledName.value && handleGetLabel(newValue)
 
-watch(
-  () => props.modelValue,
-  (newValue) => {
-    selectValue.value = isDef(newValue) ? String(newValue) : ''
-  },
-  { immediate: true }
-)
+    // 如果是多选，必填时，如果没选择，则设置为null，否则返回[] ,必填校验将会失效
+    emit('update:modelValue', props.required && props.selectType === 'checkbox' && !newValue.length ? null : newValue)
+  }
+})
 
-watch(
-  () => props.columns,
-  (newValue) => {
-    // 可用于调试
-    // console.log('props.columns changed:', newValue)
-  },
-  { immediate: true }
-)
+/** 获取下拉选择框的下拉选项 */
+const selectOptions = computed(() => {
+  if (isApiOptions.value) {
+    return isVirtual.value ? showOptions.value : optionsByApi.value
+  }
+
+  return isVirtual.value ? showOptions.value : optionList.value
+})
+
+/** 组装校验规则 */
+const rules = computed(() => {
+  let rules = []
+  if (props.required) {
+    rules.push({ required: true, message: '选择' + props.label })
+  }
+  return rules
+})
+
+/** 所有的下列选项 */
+const allOptions = computed(() => {
+  return isApiOptions.value ? optionsByApi.value : optionList.value
+})
 
 /**
  * 选择确认事件
@@ -172,10 +224,45 @@ const handleConfirm = (event: any) => {
  * 选择确认事件
  * @param event
  */
-const handleChange = (event: any) => {
-  console.log(event)
+const handleChange = (event: any) => {}
+/**
+ * 处理搜索过滤
+ * @param {string} value 搜索关键词
+ */
+const handleChangeFilterSearch = (value: any) => {
+  // 清空搜索时重置为前100条
+  if (!value.trim()) {
+    showOptions.value = isApiOptions.value ? optionsByApi.value.slice(0, 100) : optionList.value.slice(0, 100)
+    return
+  }
 
-  emit('update:modelValue', event)
+  // 执行过滤（不直接修改 selectOptions）
+  showOptions.value = handleGetOptionsByLabel(value.trim())
+}
+/**
+ * 根据文本获取数据
+ * @param {string} label 搜索关键词
+ */
+const handleGetOptionsByLabel = (label: any) => {
+  return allOptions.value.filter((item) => item[labelKey.value].includes(label))
+}
+
+/**
+ * 根据值获取数据
+ * @param {string} value 搜索关键词
+ */
+const handleGetOptionsByValue = (value: any) => {
+  return allOptions.value.filter((item) => item[valueKey.value] === value)
+}
+
+/**
+ * 根据value获取label
+ * @param value
+ */
+const handleGetLabel = (value: any) => {
+  if (value) {
+    formValue.value[textFiledName.value] = selectOptions.value.find((item) => item[props.valueKey] === value)[labelKey.value]
+  }
 }
 
 const handleOpen = () => {
@@ -187,35 +274,4 @@ const handleClose = () => {
 }
 </script>
 
-<script lang="ts">
-const componentName = `${PREFIX}-select`
-
-export default defineComponent({
-  name: componentName,
-  options: {
-    virtualHost: true,
-    addGlobalClass: true,
-    // #ifndef H5
-    styleIsolation: 'shared'
-    // #endif
-  }
-})
-</script>
-
-<template>
-  <view class="up-select">
-    <wd-select-picker
-      :label="label"
-      :label-width="labelWidth"
-      :label-key="effectiveLabelKey"
-      :value-key="effectiveValueKey"
-      :prop="field"
-      :columns="selectOptions"
-      @open="handleOpen"
-      @close="handleClose"
-      @confirm="handleConfirm"
-      @change="handleChange"
-      v-model="selectValue"
-    ></wd-select-picker>
-  </view>
-</template>
+<style></style>
