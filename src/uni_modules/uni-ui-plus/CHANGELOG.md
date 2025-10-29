@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.0.55
+
+
+### 🚀 Enhancements
+
+- 添加form表单雏形 ([c099c67](https://github.com/caiwenglong/uni-ui-plus/commit/c099c67))
+- Form表单添加select ([58a0f84](https://github.com/caiwenglong/uni-ui-plus/commit/58a0f84))
+- 选择框添加可搜索功能 ([a9d5e0b](https://github.com/caiwenglong/uni-ui-plus/commit/a9d5e0b))
+- 添加自定义类型组件 ([9936f68](https://github.com/caiwenglong/uni-ui-plus/commit/9936f68))
+- Form表单添加form的组件 ([5752e65](https://github.com/caiwenglong/uni-ui-plus/commit/5752e65))
+
+### 🩹 Fixes
+
+- 国际化修改 ([d384446](https://github.com/caiwenglong/uni-ui-plus/commit/d384446))
+
+### ❤️ Contributors
+
+- Cwl <836472117@qq.com>
+
 ## v0.0.54
 
 [compare changes](https://github.com/iceywu/uni-ui-plus/compare/v0.0.53...v0.0.54)
