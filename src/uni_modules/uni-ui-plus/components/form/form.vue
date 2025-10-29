@@ -8,6 +8,22 @@
               <wd-gap bg-color="#f8f8f8" height="16rpx"></wd-gap>
             </template>
 
+            <template v-if="formItem?.type === enumFormItemType.title">
+              <wd-gap custom-class="form-gap" bg-color="#f8f8f8" height="16rpx"></wd-gap>
+              <wd-gap bg-color="#fff" height="16rpx"></wd-gap>
+              <view class="block-title-wrapper">
+                <UpBlockTitle :title="formItem?.label"></UpBlockTitle>
+              </view>
+            </template>
+
+            <template v-if="formItem?.type === enumFormItemType.link">
+              <wd-cell :title="formItem?.label">
+                <wd-button type="text" @click="handleGoPage(formItem?.url, formItem?.flag)">
+                  {{ formItem?.linkText }}
+                </wd-button>
+              </wd-cell>
+            </template>
+
             <!-- 自定义组件 -->
             <template v-if="formItem.custom">
               <slot name="custom" :formItem="formItem" :formData="formData"></slot>
@@ -25,6 +41,11 @@
               ></UpInput>
             </template>
 
+            <!-- 文本域 -->
+            <template v-if="formItem?.type === enumFormItemType.textarea">
+              <UpTextarea v-model="formData[formItem?.field]" :disabled="formItem?.disabled || disabled" v-bind="formItem"></UpTextarea>
+            </template>
+
             <!-- 选择框 -->
             <template v-if="formItem?.type === enumFormItemType.select">
               <UpSelect
@@ -35,6 +56,26 @@
                 :selectOptionsFn="formItem.selectOptionsFn"
                 :columns="formItem.columns"
               ></UpSelect>
+            </template>
+
+            <template v-if="formItem?.type === enumFormItemType.multiSelect">
+              <UpMultiSelect
+                v-model="formData[formItem?.field]"
+                :label="formItem?.label"
+                :field="formItem?.field"
+                :pattern="formItem?.pattern"
+                :options="formItem?.options"
+                :label-field="formItem?.labelField"
+                :value-field="formItem?.valueField"
+                :dictName="formItem?.dictName"
+                :disabled="formItem?.disabled || disabled"
+                :bus-name="formItem?.busName"
+                :flag="formItem?.flag"
+              ></UpMultiSelect>
+            </template>
+
+            <template v-if="formItem?.type === enumFormItemType.datePicker">
+              <UpCalendar v-model="formData[formItem?.field]" :label="formItem?.label"></UpCalendar>
             </template>
           </wd-col>
         </wd-row>
@@ -56,7 +97,6 @@ import { onMounted, defineComponent, ref, computed, watch } from 'vue'
 import { PREFIX } from '../_constants'
 import { useTranslate } from '../composables-fn/useTranslate'
 import { enumFormItemType } from './form'
-import DynamicSlot from './DynamicSlot.vue'
 const { translate } = useTranslate()
 
 const props = defineProps({

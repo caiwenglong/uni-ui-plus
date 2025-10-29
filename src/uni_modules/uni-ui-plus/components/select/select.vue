@@ -202,7 +202,6 @@ let inputValue = computed({
 
 /** 获取下拉选择框的下拉选项 */
 const selectOptions = computed(() => {
-  console.log(isVirtual.value ? showOptions.value : optionsByApi.value)
   if (isApiOptions.value) {
     return isVirtual.value ? showOptions.value : optionsByApi.value
   }
