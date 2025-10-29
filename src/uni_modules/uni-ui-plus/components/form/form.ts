@@ -12,5 +12,6 @@ export const enumFormItemType = {
   list: 'list',
   datePicker: 'datePicker',
   trailer: 'trailer',
-  autocomplete: 'autocomplete'
+  autocomplete: 'autocomplete',
+  custom: 'custom'
 }

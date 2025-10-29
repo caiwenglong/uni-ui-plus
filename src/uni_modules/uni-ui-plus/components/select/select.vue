@@ -118,6 +118,12 @@ const props = defineProps({
     default: ''
   },
 
+  /** 提示语 */
+  dataField: {
+    type: String,
+    default: 'data'
+  },
+
   /**
    * type 默认值为 checkbox， 为默认值时，value 值类型为 Array 类型
    * 设置 type 值为 radio ，开启单选类型，value 值类型为 String Number 或 Boolean。
@@ -152,6 +158,11 @@ const props = defineProps({
   extra: {
     type: Object,
     default: () => {}
+  },
+
+  hideItems: {
+    type: Array,
+    default: () => []
   }
 })
 const { selectOptionsFn } = props
@@ -164,7 +175,7 @@ const showOptions = ref<any[]>([])
 onMounted(async () => {
   if (isFunction(selectOptionsFn)) {
     const data = await selectOptionsFn()
-    optionsByApi.value = isArray(data) ? data : data.data || []
+    optionsByApi.value = isArray(data) ? data : (!!data && data[props.dataField]) || []
     isVirtual.value && (showOptions.value = optionsByApi.value?.slice(0, 20)) // 初始只取20条
   }
   if (isVirtual.value && !isApiOptions.value) {
@@ -191,6 +202,7 @@ let inputValue = computed({
 
 /** 获取下拉选择框的下拉选项 */
 const selectOptions = computed(() => {
+  console.log(isVirtual.value ? showOptions.value : optionsByApi.value)
   if (isApiOptions.value) {
     return isVirtual.value ? showOptions.value : optionsByApi.value
   }
@@ -232,7 +244,7 @@ const handleChange = (event: any) => {}
 const handleChangeFilterSearch = (value: any) => {
   // 清空搜索时重置为前100条
   if (!value.trim()) {
-    showOptions.value = isApiOptions.value ? optionsByApi.value.slice(0, 100) : optionList.value.slice(0, 100)
+    showOptions.value = isApiOptions.value ? optionsByApi.value?.slice(0, 100) : optionList.value?.slice(0, 100)
     return
   }
 

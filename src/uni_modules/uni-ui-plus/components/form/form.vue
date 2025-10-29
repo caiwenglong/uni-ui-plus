@@ -8,6 +8,13 @@
               <wd-gap bg-color="#f8f8f8" height="16rpx"></wd-gap>
             </template>
 
+            <!-- 自定义组件 -->
+            <template v-if="formItem.custom">
+              <slot name="custom" :formItem="formItem" :formData="formData"></slot>
+              <slot name="nextCustom" :formItem="formItem" :formData="formData"></slot>
+              <slot name="otherCustom" :formItem="formItem" :formData="formData"></slot>
+            </template>
+
             <!-- 输入框 -->
             <template v-if="!formItem?.type || formItem?.type === enumFormItemType.input">
               <UpInput
@@ -49,6 +56,7 @@ import { onMounted, defineComponent, ref, computed, watch } from 'vue'
 import { PREFIX } from '../_constants'
 import { useTranslate } from '../composables-fn/useTranslate'
 import { enumFormItemType } from './form'
+import DynamicSlot from './DynamicSlot.vue'
 const { translate } = useTranslate()
 
 const props = defineProps({
