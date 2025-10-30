@@ -58,6 +58,7 @@
               ></UpSelect>
             </template>
 
+            <!-- 多选框 -->
             <template v-if="formItem?.type === enumFormItemType.multiSelect">
               <UpMultiSelect
                 v-model="formData[formItem?.field]"
@@ -74,8 +75,14 @@
               ></UpMultiSelect>
             </template>
 
+            <!-- 日期选择器 -->
             <template v-if="formItem?.type === enumFormItemType.datePicker">
               <UpCalendar v-model="formData[formItem?.field]" :label="formItem?.label"></UpCalendar>
+            </template>
+
+            <!-- 建议输入框 -->
+            <template v-if="formItem?.type === enumFormItemType.autocomplete">
+              <UpAutocomplete v-model="formData[formItem?.field]" v-bind="formItem"></UpAutocomplete>
             </template>
           </wd-col>
         </wd-row>

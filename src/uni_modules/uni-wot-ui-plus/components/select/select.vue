@@ -28,7 +28,7 @@
 <script lang="ts" setup>
 import { ref, computed, toRefs, onMounted } from 'vue'
 import wdSelectPicker from './wd-select-picker/wd-select-picker.vue'
-import { isFunction, isArray } from 'lodash-es'
+import { isFunction, isArray } from '../_utils'
 
 const props = defineProps({
   /** 双向绑定的值 */
@@ -118,7 +118,7 @@ const props = defineProps({
     default: ''
   },
 
-  /** 提示语 */
+  /** 数据来源字段 */
   dataField: {
     type: String,
     default: 'data'
@@ -160,7 +160,13 @@ const props = defineProps({
     default: () => {}
   },
 
+  // 需要隐藏的选项
   hideItems: {
+    type: Array,
+    default: () => []
+  },
+  // 需要显示的选项
+  showItems: {
     type: Array,
     default: () => []
   }
@@ -202,12 +208,31 @@ let inputValue = computed({
 
 /** 获取下拉选择框的下拉选项 */
 const selectOptions = computed(() => {
+  let selectOptions = []
   if (isApiOptions.value) {
-    return isVirtual.value ? showOptions.value : optionsByApi.value
+    selectOptions = isVirtual.value ? showOptions.value : optionsByApi.value
+    // 返回过滤后的选项
+    return handleShowOptions(selectOptions)
   }
 
-  return isVirtual.value ? showOptions.value : optionList.value
+  selectOptions = isVirtual.value ? showOptions.value : optionList.value
+  return handleShowOptions(selectOptions)
 })
+
+/**
+ * 过滤选项
+ * @param selectOptions 全部的下拉选项
+ */
+const handleShowOptions = (selectOptions: any[]) => {
+  let showSelectOptions = [...selectOptions]
+  if (props.hideItems?.length) {
+    showSelectOptions = showSelectOptions.filter((item) => !props.hideItems.includes(item[valueKey.value]))
+  }
+  if (props.showItems?.length) {
+    showSelectOptions = showSelectOptions.filter((item) => props.showItems.includes(item[valueKey.value]))
+  }
+  return showSelectOptions
+}
 
 /** 组装校验规则 */
 const rules = computed(() => {

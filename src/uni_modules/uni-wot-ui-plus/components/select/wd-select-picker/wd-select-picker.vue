@@ -3,7 +3,7 @@
     <wd-cell
       v-if="!$slots.default"
       :title="label"
-      :value="showValue || placeholder || t('placeholder')"
+      :value="showValue || placeholder || '请选择'"
       :required="required"
       :size="size"
       :title-width="labelWidth"
@@ -38,7 +38,7 @@
     <wd-action-sheet
       v-model="pickerShow"
       :duration="250"
-      :title="title || t('title')"
+      :title="title || ''"
       :close-on-click-modal="closeOnClickModal"
       :z-index="zIndex"
       :safe-area-inset-bottom="safeAreaInsetBottom"
@@ -50,7 +50,7 @@
       <wd-search
         v-if="filterable"
         v-model="filterVal"
-        :placeholder="filterPlaceholder || t('filterPlaceholder')"
+        :placeholder="filterPlaceholder || ''"
         hide-cancel
         placeholder-left
         @change="handleFilterChange"
@@ -107,7 +107,7 @@
       <!-- 确认按钮 -->
       <view v-if="showConfirm" class="wd-select-picker__footer">
         <wd-button block size="large" @click="onConfirm" :disabled="loading">
-          {{ confirmButtonText || t('confirm') }}
+          {{ confirmButtonText || '确认' }}
         </wd-button>
       </view>
     </wd-action-sheet>
@@ -417,3 +417,14 @@ defineExpose<SelectPickerExpose>({
   open
 })
 </script>
+
+<style lang="scss">
+.wd-select-picker__cell--placeholder {
+  :deep(.wd-cell__value) {
+    color: var(--wd-color-placeholder, #c0c4cc);
+  }
+  :deep(.wd-select-picker__arrow) {
+    color: var(--wd-color-placeholder, #c0c4cc);
+  }
+}
+</style>
