@@ -310,4 +310,12 @@ const handleClose = () => {
 }
 </script>
 
-<style></style>
+<style scoped lang="scss">
+:deep(.wd-select-picker) {
+  .wd-popup-wrapper {
+    .wd-popup {
+      max-height: 50%;
+    }
+  }
+}
+</style>

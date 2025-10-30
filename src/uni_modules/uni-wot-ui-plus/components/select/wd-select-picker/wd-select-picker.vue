@@ -129,7 +129,13 @@ import { getCurrentInstance, onBeforeMount, ref, watch, nextTick, computed } fro
 import { getRect, isArray, isDef, isFunction, pause } from 'wot-design-uni/components/common/util'
 import { selectPickerProps, type SelectPickerExpose } from 'wot-design-uni/components/wd-select-picker/types'
 
-const props = defineProps(selectPickerProps)
+const props = defineProps({
+  ...selectPickerProps,
+  isVirtual: {
+    type: Boolean,
+    default: false
+  }
+})
 const emit = defineEmits(['change', 'cancel', 'confirm', 'clear', 'update:modelValue', 'open', 'close', 'filterSearch'])
 
 const pickerShow = ref<boolean>(false)
