@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.0.2
+
+[compare changes](https://github.com/caiwenglong/uni-ui-plus/compare/v0.0.56...v0.0.2)
+
+### 🚀 Enhancements
+
+- 修改包名称 ([67b844b](https://github.com/caiwenglong/uni-ui-plus/commit/67b844b))
+
+### 🩹 Fixes
+
+- 去掉每一个组件都需要index.scss 文件的要求 ([510beb9](https://github.com/caiwenglong/uni-ui-plus/commit/510beb9))
+
+### 🏡 Chore
+
+- **release:** V0.0.56 ([53930c3](https://github.com/caiwenglong/uni-ui-plus/commit/53930c3))
+
+### ❤️ Contributors
+
+- Cwl <836472117@qq.com>
+
 ## v0.0.56
 
 [compare changes](https://github.com/caiwenglong/uni-ui-plus/compare/v0.0.56...v0.0.56)
