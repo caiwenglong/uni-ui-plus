@@ -32,8 +32,8 @@ export function UpResolver(): ComponentResolver {
           .slice(2)
           .replace(/([a-z])/, '$1')
           .toLowerCase()
-        const component = `uni-ui-plus/components/${cName}/${cName}.vue`
-        const style = `uni-ui-plus/components/${cName}/index.scss`
+        const component = `uni-wot-ui-plus/components/${cName}/${cName}.vue`
+        const style = `uni-wot-ui-plus/components/${cName}/index.scss`
 
         return {
           name,

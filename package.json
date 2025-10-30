@@ -67,8 +67,8 @@
     "coverage:h5": "cross-env UNI_PLATFORM=h5 vitest run --coverage",
     "test:component": "esno ./scripts/test-component.ts",
     "test:workflow": "esno ./scripts/test-workflow.ts",
-    "build-package": "pnpm run --dir src/uni_modules/uni-ui-plus build",
-    "release-v2": "pnpm run --dir src/uni_modules/uni-ui-plus release"
+    "build-package": "pnpm run --dir src/uni_modules/uni-wot-ui-plus build",
+    "release-v2": "pnpm run --dir src/uni_modules/uni-wot-ui-plus release"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4050720250324001",
