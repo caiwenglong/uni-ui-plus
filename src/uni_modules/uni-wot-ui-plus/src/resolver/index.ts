@@ -33,12 +33,14 @@ export function UpResolver(): ComponentResolver {
           .replace(/([a-z])/, '$1')
           .toLowerCase()
         const component = `uni-wot-ui-plus/components/${cName}/${cName}.vue`
-        const style = `uni-wot-ui-plus/components/${cName}/index.scss`
+        // 不再默认指定样式文件路径，避免组件必须包含 index.scss 文件
+        // 让用户在需要时手动引入样式文件
 
         return {
           name,
           from: component,
-          sideEffects: isH5 ? style : ''
+          // 移除样式文件的自动导入，使其完全可选
+          sideEffects: []
         }
       }
     }
