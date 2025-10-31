@@ -309,13 +309,3 @@ const handleClose = () => {
   uni.$emit('eBusSelectComponent', false)
 }
 </script>
-
-<style scoped lang="scss">
-:deep(.wd-select-picker) {
-  .wd-popup-wrapper {
-    .wd-popup {
-      max-height: 50%;
-    }
-  }
-}
-</style>

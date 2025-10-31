@@ -35,82 +35,92 @@
     <view v-else @click="open">
       <slot></slot>
     </view>
-    <wd-action-sheet
-      v-model="pickerShow"
-      :duration="250"
-      :title="title || ''"
-      :close-on-click-modal="closeOnClickModal"
-      :z-index="zIndex"
-      :safe-area-inset-bottom="safeAreaInsetBottom"
-      :root-portal="rootPortal"
-      @close="close"
-      @opened="scrollIntoView ? setScrollIntoView() : ''"
-      custom-header-class="wd-select-picker__header"
-    >
-      <wd-search
-        v-if="filterable"
-        v-model="filterVal"
-        :placeholder="filterPlaceholder || ''"
-        hide-cancel
-        placeholder-left
-        @change="handleFilterChange"
-      />
-      <scroll-view
-        :class="`wd-select-picker__wrapper ${filterable ? 'is-filterable' : ''} ${loading ? 'is-loading' : ''} ${customContentClass}`"
-        :scroll-y="!loading"
-        :scroll-top="scrollTop"
-        :scroll-with-animation="true"
+    <view class="wd-action-sheet__wrapper">
+      <wd-action-sheet
+        v-model="pickerShow"
+        :duration="250"
+        :title="title || ''"
+        :close-on-click-modal="closeOnClickModal"
+        :z-index="zIndex"
+        :safe-area-inset-bottom="safeAreaInsetBottom"
+        :root-portal="rootPortal"
+        @close="close"
+        @opened="scrollIntoView ? setScrollIntoView() : ''"
+        custom-header-class="wd-select-picker__header"
       >
-        <!-- 多选 -->
-        <view v-if="type === 'checkbox' && isArray(selectList)" id="wd-checkbox-group">
-          <wd-checkbox-group v-model="selectList" cell :size="selectSize" :checked-color="checkedColor" :min="min" :max="max" @change="handleChange">
-            <view v-for="item in filterColumns" :key="item[valueKey]" :id="'check' + item[valueKey]">
-              <wd-checkbox :modelValue="item[valueKey]" :disabled="item.disabled">
-                <block v-if="filterable && filterVal">
-                  <block v-for="text in item[labelKey]" :key="text.label">
-                    <text v-if="text.type === 'active'" class="wd-select-picker__text-active">
-                      {{ text.label }}
-                    </text>
-                    <block v-else>{{ text.label }}</block>
+        <wd-search
+          v-if="filterable"
+          v-model="filterVal"
+          :placeholder="filterPlaceholder || ''"
+          hide-cancel
+          placeholder-left
+          @change="handleFilterChange"
+        />
+        <scroll-view
+          :class="`wd-select-picker__wrapper ${filterable ? 'is-filterable' : ''} ${loading ? 'is-loading' : ''} ${customContentClass}`"
+          :scroll-y="!loading"
+          :scroll-top="scrollTop"
+          :scroll-with-animation="true"
+        >
+          <!-- 多选 -->
+          <view v-if="type === 'checkbox' && isArray(selectList)" id="wd-checkbox-group">
+            <wd-checkbox-group
+              v-model="selectList"
+              cell
+              :size="selectSize"
+              :checked-color="checkedColor"
+              :min="min"
+              :max="max"
+              @change="handleChange"
+            >
+              <view v-for="item in filterColumns" :key="item[valueKey]" :id="'check' + item[valueKey]">
+                <wd-checkbox :modelValue="item[valueKey]" :disabled="item.disabled">
+                  <block v-if="filterable && filterVal">
+                    <block v-for="text in item[labelKey]" :key="text.label">
+                      <text v-if="text.type === 'active'" class="wd-select-picker__text-active">
+                        {{ text.label }}
+                      </text>
+                      <block v-else>{{ text.label }}</block>
+                    </block>
                   </block>
-                </block>
-                <block v-else>
-                  {{ item[labelKey] }}
-                </block>
-              </wd-checkbox>
-            </view>
-          </wd-checkbox-group>
-        </view>
-        <!-- 单选 -->
-        <view v-if="type === 'radio' && !isArray(selectList)" id="wd-radio-group">
-          <wd-radio-group v-model="selectList" cell :size="selectSize" :checked-color="checkedColor" @change="handleChange">
-            <view v-for="(item, index) in filterColumns" :key="index" :id="'radio' + item[valueKey]">
-              <wd-radio :value="item[valueKey]" :disabled="item.disabled">
-                <block v-if="filterable && filterVal">
-                  <block v-for="text in item[labelKey]" :key="text.label">
-                    <text :class="`${text.type === 'active' ? 'wd-select-picker__text-active' : ''}`">
-                      {{ text.label }}
-                    </text>
+                  <block v-else>
+                    {{ item[labelKey] }}
                   </block>
-                </block>
-                <block v-else>
-                  {{ item[labelKey] }}
-                </block>
-              </wd-radio>
-            </view>
-          </wd-radio-group>
+                </wd-checkbox>
+              </view>
+            </wd-checkbox-group>
+          </view>
+          <!-- 单选 -->
+          <view v-if="type === 'radio' && !isArray(selectList)" id="wd-radio-group">
+            <wd-radio-group v-model="selectList" cell :size="selectSize" :checked-color="checkedColor" @change="handleChange">
+              <view v-for="(item, index) in filterColumns" :key="index" :id="'radio' + item[valueKey]">
+                <wd-radio :value="item[valueKey]" :disabled="item.disabled">
+                  <block v-if="filterable && filterVal">
+                    <block v-for="text in item[labelKey]" :key="text.label">
+                      <text :class="`${text.type === 'active' ? 'wd-select-picker__text-active' : ''}`">
+                        {{ text.label }}
+                      </text>
+                    </block>
+                  </block>
+                  <block v-else>
+                    {{ item[labelKey] }}
+                  </block>
+                </wd-radio>
+              </view>
+            </wd-radio-group>
+          </view>
+          <view v-if="loading" class="wd-select-picker__loading" @touchmove="noop">
+            <wd-loading :color="loadingColor" />
+          </view>
+        </scroll-view>
+        <!-- 确认按钮 -->
+        <view v-if="showConfirm" class="wd-select-picker__footer">
+          <wd-button block size="large" @click="onConfirm" :disabled="loading">
+            {{ confirmButtonText || '确认' }}
+          </wd-button>
         </view>
-        <view v-if="loading" class="wd-select-picker__loading" @touchmove="noop">
-          <wd-loading :color="loadingColor" />
-        </view>
-      </scroll-view>
-      <!-- 确认按钮 -->
-      <view v-if="showConfirm" class="wd-select-picker__footer">
-        <wd-button block size="large" @click="onConfirm" :disabled="loading">
-          {{ confirmButtonText || '确认' }}
-        </wd-button>
-      </view>
-    </wd-action-sheet>
+      </wd-action-sheet>
+    </view>
   </view>
 </template>
 <script lang="ts">
@@ -431,6 +441,12 @@ defineExpose<SelectPickerExpose>({
   }
   :deep(.wd-select-picker__arrow) {
     color: var(--wd-color-placeholder, #c0c4cc);
+  }
+}
+
+.wd-popup-wrapper {
+  .wd-popup {
+    max-height: 50%;
   }
 }
 </style>
