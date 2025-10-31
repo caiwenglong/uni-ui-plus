@@ -446,7 +446,7 @@ defineExpose<SelectPickerExpose>({
 
 .wd-popup-wrapper {
   .wd-popup {
-    max-height: 50%;
+    max-height: 60%;
   }
 }
 </style>
