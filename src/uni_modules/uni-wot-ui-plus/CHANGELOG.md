@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.0.3
+
+[compare changes](https://github.com/caiwenglong/uni-ui-plus/compare/v0.0.2...v0.0.3)
+
+### 🚀 Enhancements
+
+- 添加建议输入框，以及搜索组件新增显示隐藏项功能 ([419c661](https://github.com/caiwenglong/uni-ui-plus/commit/419c661))
+
+### 🩹 Fixes
+
+- 修复搜索框搜索不生效问题以及高度过高问题 ([b64345a](https://github.com/caiwenglong/uni-ui-plus/commit/b64345a))
+- 选择框最大高度设置为50% ([7f3f01e](https://github.com/caiwenglong/uni-ui-plus/commit/7f3f01e))
+
+### ❤️ Contributors
+
+- Cwl <836472117@qq.com>
+
 ## v0.0.2
 
 [compare changes](https://github.com/caiwenglong/uni-ui-plus/compare/v0.0.56...v0.0.2)
