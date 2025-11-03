@@ -135,5 +135,9 @@ export default {
     clearText: '清空',
     revokeText: '撤销',
     restoreText: '恢复'
+  },
+  button: {
+    loading: '加载中...',
+    default: '按钮'
   }
 }

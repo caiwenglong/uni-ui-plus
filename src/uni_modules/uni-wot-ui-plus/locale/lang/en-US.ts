@@ -129,5 +129,9 @@ export default {
     clearText: 'Clear',
     revokeText: 'Undo',
     restoreText: 'Restore'
+  },
+  button: {
+    loading: 'Loading...',
+    default: 'Button'
   }
 }

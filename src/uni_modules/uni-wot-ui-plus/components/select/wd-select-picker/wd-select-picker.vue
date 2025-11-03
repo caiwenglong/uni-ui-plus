@@ -437,16 +437,17 @@ defineExpose<SelectPickerExpose>({
 <style lang="scss">
 .wd-select-picker__cell--placeholder {
   :deep(.wd-cell__value) {
-    color: var(--wd-color-placeholder, #c0c4cc);
+    color: var(--wd-color-placeholder, #c0c4cc) !important;
   }
-  :deep(.wd-select-picker__arrow) {
+
+  .wd-select-picker__arrow {
     color: var(--wd-color-placeholder, #c0c4cc);
   }
 }
 
 .wd-popup-wrapper {
   .wd-popup {
-    max-height: 60%;
+    max-height: 60% !important;
   }
 }
 </style>
